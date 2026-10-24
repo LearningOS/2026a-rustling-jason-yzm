@@ -40,10 +40,23 @@ impl Default for Person {
 // If while parsing the age, something goes wrong, then return the default of
 // Person Otherwise, then return an instantiated Person object with the results
 
-// I AM NOT DONE
 
+use std::collections::VecDeque;
 impl From<&str> for Person {
     fn from(s: &str) -> Person {
+        let mut person:VecDeque<_> = s.split(',').collect();
+        let mut m_person = Person::default();
+        if let Some(m_name) = person.pop_front(){
+            if person.len() == 0 { return Person::default(); }
+            if m_name.len() == 0 { return Person::default(); }
+            if let Some(m_age) = person.pop_front(){
+                if m_age.len() == 0 || person.len() != 0{ return Person::default(); }
+                if let Ok(m__age) = m_age.parse(){
+                   return Person{name:m_name.to_string(),age:m__age};
+                }
+            } 
+        }
+        Person::default()
     }
 }
 

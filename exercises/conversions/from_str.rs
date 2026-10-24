@@ -31,7 +31,6 @@ enum ParsePersonError {
     ParseInt(ParseIntError),
 }
 
-// I AM NOT DONE
 
 // Steps:
 // 1. If the length of the provided string is 0, an error should be returned
@@ -49,9 +48,26 @@ enum ParsePersonError {
 // you want to return a string error message, you can do so via just using
 // return `Err("my error message".into())`.
 
+use std::collections::VecDeque;
 impl FromStr for Person {
     type Err = ParsePersonError;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        if s == "" { return Err(Self::Err::Empty); } 
+        let mut person:VecDeque<_> = s.split(',').collect();
+        if let Some(m_name) = person.pop_front(){
+            if person.len() == 0 { return Err(Self::Err::BadLen); }
+            if m_name.len() == 0 { return Err(Self::Err::NoName); }
+            if let Some(m_age) = person.pop_front(){
+                if person.len() != 0 { return Err(Self::Err::BadLen); }
+                if let Ok(m__age) = m_age.parse(){
+                return Ok(Person{name:m_name.to_string(),age:m__age});
+                }
+                if let Err(e) = m_age.parse::<usize>(){
+                    return Err(Self::Err::ParseInt(e));
+                }
+            } 
+        }
+        return Err(Self::Err::Empty); //????
     }
 }
 

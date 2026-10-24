@@ -2,19 +2,22 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
 use std::vec::*;
+use std::cmp::PartialOrd;
+use std::clone::Clone;
 
 #[derive(Debug)]
-struct Node<T> {
+struct Node<T:PartialOrd+Clone> {
     val: T,
     next: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Node<T> {
+impl<T:PartialOrd+Clone> Node<T> {
     fn new(t: T) -> Node<T> {
         Node {
             val: t,
@@ -23,19 +26,19 @@ impl<T> Node<T> {
     }
 }
 #[derive(Debug)]
-struct LinkedList<T> {
+struct LinkedList<T:PartialOrd+Clone> {
     length: u32,
     start: Option<NonNull<Node<T>>>,
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T:PartialOrd+Clone> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T:PartialOrd+Clone> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -69,18 +72,29 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
+	pub fn merge(mut list_a:LinkedList<T>, mut list_b:LinkedList<T>) -> Self
 	{
 		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+        let mut list = LinkedList::new();
+        let mut i:i32 = 0;
+        let mut j:i32 = 0;
+        while  (i as u32) < list_a.length{ 
+            while list_a.get(i) > list_b.get(j) && (j as u32) < list_b.length{
+                list.add(list_b.get(j).unwrap().clone());
+                j += 1;
+            }
+            list.add(list_a.get(i).unwrap().clone());
+            i += 1;
         }
+        while (j as u32) < list_b.length{
+            list.add(list_b.get(j).unwrap().clone());
+            j += 1;
+        }
+        list
 	}
 }
 
-impl<T> Display for LinkedList<T>
+impl<T:PartialOrd+Clone> Display for LinkedList<T>
 where
     T: Display,
 {
@@ -92,7 +106,7 @@ where
     }
 }
 
-impl<T> Display for Node<T>
+impl<T:PartialOrd+Clone> Display for Node<T>
 where
     T: Display,
 {
